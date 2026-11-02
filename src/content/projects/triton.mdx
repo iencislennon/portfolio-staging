@@ -1,0 +1,85 @@
+---
+title: Triton Kernel Optimization
+year: 2026
+status: code
+role: ML systems contributor (24 of 53 commits in the repository)
+team: Team project. Roster and official team name to be confirmed.
+category: Deep ML systems / benchmark
+summary: Custom Triton kernels, padding removal and smaller saved activations cut Qwen2.5-1.5B LoRA training time by 1.40× and peak GPU memory by 3.24× on a Tesla T4, with held-out loss within 0.012% of the baseline.
+problem: Fine-tuning a 1.5B-parameter model on a single 16 GB T4 is slow and memory-bound; the challenge asked for a faster or leaner training run without changing the task or its outputs.
+contribution:
+  - "Authored 24 of 53 commits: measurement and robustness tooling, final-candidate measurement records, Kaggle submission notebook and run, submission docs."
+stack: [Python, Triton, PyTorch, LoRA / NF4, Kaggle T4]
+accent: indigo-cyan
+links:
+  - { label: "Code", href: "https://github.com/iencislennon/triton_kernel_for_decentra" }
+  - { label: "Team repository", href: "https://github.com/alikhan-kai/decentrathon" }
+metrics:
+  - { value: "1.3954×", label: "Speedup (whole command)", context: "83.25 s → 59.66 s, Tesla T4, seed 1, public rows", source: "docs/measurements/submission_632851f/result.json", sourceUrl: "https://github.com/iencislennon/triton_kernel_for_decentra/blob/main/docs/measurements/submission_632851f/result.json" }
+  - { value: "3.2447×", label: "Peak GPU memory ratio", context: "14,345 MiB (base) vs 4,421 MiB (solution)", source: "README, results table (run F)", sourceUrl: "https://github.com/iencislennon/triton_kernel_for_decentra#results" }
+  - { value: "−0.012%", label: "Held-out loss vs base", context: "2.04966 (base) vs 2.04942 (solution)", source: "docs/measurements/submission_632851f/checks.json", sourceUrl: "https://github.com/iencislennon/triton_kernel_for_decentra/blob/main/docs/measurements/submission_632851f/checks.json" }
+coverImage: { id: cover-triton, alt: "Bar chart of whole-command time on a Tesla T4: base 83.25 seconds, solution 59.66 seconds, axis starting at zero." }
+architectureImage: { id: arch-triton, alt: "Diagram of the training path: Soup task with NF4 and LoRA, padding removal, custom Triton kernels and smaller saved activations, measured by a paired ABBA harness." }
+limitations:
+  - The full solution test suite still has five failures from a PEFT/torchao environment incompatibility; they are recorded, not hidden.
+  - The gain from each individual module is unknown; it needs a one-module on/off ABBA experiment in one T4 session.
+  - Raw JSON from two earlier comparison runs exists locally but is not tracked in Git, so those rows cannot be reproduced from the repository alone.
+nextSteps:
+  - Isolate per-module gains with one-module on/off ABBA runs.
+  - Profile attention layer by layer before attempting to remove its fallbacks.
+  - Compare fixed recomputation thresholds for the MLP on both datasets.
+featured: true
+order: 1
+---
+import Figure from "../../components/Figure.astro";
+import Sources from "../../components/Sources.astro";
+
+## Context
+
+The Decentrathon 6.0 "Soup Kernel Challenge" fixes the training task: Soup 0.77.0, NF4 weights, LoRA rank 16, 256 Kazakh instruction examples, batch size 4, maximum length 512, one epoch of 64 steps. Solutions may add Triton kernels and other speedups but must keep the task's outputs and pass ten automatic checks, including a minimum share of runtime spent in the team's own kernels.
+
+## My contribution
+
+I authored 24 of the 53 commits in this repository (the rest are from two other authors). My commits cover the measurement and robustness tooling, the final-candidate measurement records, the Kaggle submission notebook and its recorded run, and the submission documentation. Which kernels I wrote is not recorded in the commit history, so I am not claiming individual kernels here.
+
+## Constraints
+
+One Tesla T4 (16 GB), a fixed task configuration, a fixed submission deadline, and a rule that own kernels must account for at least 5% of runtime. An earlier version failed that check at 0.46%.
+
+## Architecture
+
+<div class="diagram" tabindex="0" role="group" aria-label="Architecture diagram, scrollable on small screens">
+  <Figure id="arch-triton" alt="Diagram of the training path: Soup task with NF4 and LoRA, padding removal, custom Triton kernels and smaller saved activations, measured by a paired ABBA harness." />
+</div>
+
+The training path removes padding tokens, runs hot operations in Triton kernels and stores smaller activations for the backward pass. A separate harness measures it against unmodified Soup.
+
+## Decisions
+
+- **Measure paired, not once.** Each comparison runs base → solution → solution → base so drift in the shared T4 does not favour either side. Wall time is the median per side; memory is the maximum peak per side.
+- **Report the weaker earlier runs too.** The README keeps two earlier comparisons (1.3366× and 1.3193× speedup) next to the final one (1.3954×) instead of showing only the best.
+- **Keep failures in the evidence.** The notebook log with the five failing tests is tracked alongside the passing checks.
+
+## Evaluation
+
+Final submission-source run (F), public rows, seed 1: whole command 83.25 s (base) vs 59.66 s (solution); peak GPU memory 14,345 MiB vs 4,421 MiB; held-out loss 2.04966 vs 2.04942; own-kernel share 10.0% in the lowest repeat against a required 5%. All automatic checks 1–10 passed at the submitted commit.
+
+A separate robustness run on other dataset rows (seed 7) gave 1.3193× speedup, a 3.2579× memory ratio and +0.017% held-out loss. That run is a local experiment, not the organizers' hidden evaluation.
+
+<Sources items={["README.md, Results section", "docs/measurements/submission_632851f/result.json and checks.json", "Task configuration: task/task.yaml"]} />
+
+## What failed
+
+The first complete version failed check 4: own kernels were 0.46% of runtime against the 5% requirement, even though speed and memory had improved. Closing that gap meant moving real work into Triton kernels rather than relabelling it. The full solution test suite also still has five failures from a PEFT/torchao incompatibility in the test environment.
+
+## Impact
+
+Only what the measurements support: on the stated task and hardware, the submitted solution trained 1.40× faster, used 3.24× less peak GPU memory and kept held-out loss within 0.012% of the baseline. I make no claim beyond that task and a single T4.
+
+## Next iteration
+
+Per-module on/off experiments, an attention profile before changing its fallbacks, and fixed-policy MLP recomputation comparisons. The expected gains are unknown until those runs exist.
+
+## Reproducibility
+
+The repository includes a CPU-only check (`bash tools/check_local.sh`, which passes) and a Kaggle notebook configured with the submission commit and `--repeats 2`. Public visibility of that notebook has not been verified. Raw JSON for the two earlier comparison runs is not tracked in Git.

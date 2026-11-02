@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+import StatusChip from "./StatusChip.astro";
+import Cover from "./Cover.astro";
+const { project, level = "h3" } = Astro.props as { project: CollectionEntry<"projects">; level?: "h2" | "h3" };
+const Tag = level;
+const d = project.data;
+---
+<article class="card pc">
+  <Cover id={d.coverImage!.id} alt={d.coverImage!.alt} />
+  <div class="head">
+    <Tag><a class="stretch" href={`/work/${project.id}/`}>{d.title}</a></Tag>
+    <StatusChip status={d.status} />
+  </div>
+  <p class="meta">{d.category} · {d.year}</p>
+  <p class="sum">{d.summary}</p>
+  <p class="mine"><strong>My part:</strong> {d.contribution[0]}</p>
+  <ul class="tags" aria-label="Stack">{d.stack.map((s) => <li class="tag">{s}</li>)}</ul>
+  <p class="links">
+    <a class="cs" href={`/work/${project.id}/`}>Case study</a>
+    {d.links.slice(0, 2).map((l) => <a href={l.href} rel="noopener noreferrer">{l.label}<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>)}
+  </p>
+</article>
+<style>
+  .pc { display: flex; flex-direction: column; gap: 12px; position: relative; height: 100%; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .head :global(h2), .head :global(h3) { margin: 0; font-size: clamp(1.25rem, 2.5vw, 1.625rem); }
+  .head :global(a) { color: var(--ink); text-decoration: none; }
+  .stretch::after { content: ""; position: absolute; inset: 0; border-radius: 16px; }
+  .sum { margin: 0; color: var(--ink-soft); font-size: 1rem; }
+  .tags { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .links { margin: auto 0 0; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 20px; position: relative; z-index: 1; }
+  .links a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 600; }
+  .meta { margin: 0; }
+  .mine { margin: 0; font-size: 0.9375rem; color: var(--ink-soft); }
+</style>

@@ -1,0 +1,108 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Cover from "../../components/Cover.astro";
+import MetricTile from "../../components/MetricTile.astro";
+import StatusChip from "../../components/StatusChip.astro";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+const { project } = Astro.props;
+const d = project.data;
+const { Content, headings } = await render(project);
+const toc = headings.filter((h) => h.depth === 2);
+const primary = d.links[0];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: d.title,
+  description: d.summary,
+  codeRepositoryUrl: primary?.href,
+  programmingLanguage: d.stack[0],
+  dateCreated: String(d.year),
+  author: { "@type": "Person", name: site.name },
+};
+---
+<Base title={d.title} description={d.summary} path={`/work/${project.id}/`} type="article" jsonLd={jsonLd}>
+  <article class="container page">
+    <header class="top">
+      <p class="eyebrow"><a href="/work/">Work</a> / {d.category}</p>
+      <h1>{d.title}</h1>
+      <p class="meta facts">
+        <StatusChip status={d.status} /> {d.year} · {d.role} · {d.team}
+      </p>
+      <p class="result">{d.summary}</p>
+      <p class="cta">
+        {d.links.map((l, i) => <a class={`btn ${i === 0 ? "btn-primary" : "btn-secondary"}`} href={l.href} rel="noopener noreferrer">{l.label}<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>)}
+      </p>
+      <Cover id={d.coverImage!.id} alt={d.coverImage!.alt} />
+    </header>
+
+    <section aria-labelledby="results-h" class="metrics-wrap">
+      <h2 id="results-h">Verified results</h2>
+      <div class="metrics">{d.metrics.map((m) => <MetricTile {...m} />)}</div>
+    </section>
+
+    <div class="layout">
+      {toc.length > 0 && (
+        <nav class="toc" aria-label="On this page">
+          <p class="meta">On this page</p>
+          <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </nav>
+      )}
+      <div class="prose read"><Content /></div>
+    </div>
+
+    <section class="lists" aria-label="Limitations and next steps">
+      <div>
+        <h2>Limitations</h2>
+        <ul>{d.limitations.map((l) => <li>{l}</li>)}</ul>
+      </div>
+      {d.nextSteps.length > 0 && (
+        <div>
+          <h2>Next steps</h2>
+          <ul>{d.nextSteps.map((l) => <li>{l}</li>)}</ul>
+        </div>
+      )}
+    </section>
+  </article>
+</Base>
+
+<style is:global>
+  .prose h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 56px 0 16px; scroll-margin-top: 88px; }
+  .prose { overflow-wrap: break-word; }
+  .prose ul { padding-left: 22px; max-width: 68ch; }
+  .prose li { margin-bottom: 8px; }
+  .diagram { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; margin: 16px 0 24px; background: var(--paper); }
+  .diagram svg { min-width: 560px; display: block; width: 100%; }
+</style>
+<style>
+  .page { padding-block: 40px 96px; }
+  .top h1 { font-size: clamp(2.5rem, 7vw, 3.5rem); margin-bottom: 16px; }
+  .eyebrow a { color: inherit; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 16px; }
+  .result { font: 600 clamp(1.125rem, 2.4vw, 1.5rem)/1.4 var(--font-head); color: var(--ink); max-width: 56ch; margin-bottom: 24px; }
+  .cta { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .metrics-wrap { margin-block: 48px; }
+  .metrics-wrap h2 { font-size: 1.5rem; margin-bottom: 20px; }
+  .metrics { display: grid; gap: 16px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .layout > * { min-width: 0; }
+  .toc { font-size: 0.9375rem; }
+  .toc ol { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 2px; }
+  .toc a { display: inline-flex; min-height: 44px; align-items: center; color: var(--ink-soft); text-decoration: none; }
+  .toc a:hover { color: var(--primary); text-decoration: underline; }
+  .lists { display: grid; gap: 32px; margin-top: 72px; padding-top: 40px; border-top: 1px solid var(--line); }
+  .lists h2 { font-size: 1.5rem; margin-bottom: 12px; }
+  .lists ul { padding-left: 22px; }
+  .lists li { margin-bottom: 8px; max-width: 68ch; }
+  @media (min-width: 640px) { .cta { flex-direction: row; flex-wrap: wrap; } .metrics { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } }
+  @media (min-width: 900px) { .lists { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1200px) {
+    .layout { grid-template-columns: 220px minmax(0, 1fr); gap: 56px; }
+    .toc { position: sticky; top: 88px; align-self: start; }
+  }
+</style>

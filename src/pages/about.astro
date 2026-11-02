@@ -1,0 +1,31 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+---
+<Base title="About" description="About Ansar Tleubayev: AI/ML engineer in Almaty, Kazakhstan, seeking international internships and research roles." path="/about/">
+  <section class="section">
+    <div class="container read">
+      <p class="eyebrow">About</p>
+      <h1>About me</h1>
+      <p>I'm Ansar, an AI/ML engineer based in {site.location}. I build agentic systems, applied machine learning pipelines and optimized training code, and I care most about whether a result holds up when someone else checks it.</p>
+      <p>My recent work includes Triton kernels for LoRA training, a five-agent crisis decision-support system, a leakage-aware air-quality forecasting pipeline and a geospatial water-storage dashboard. The case studies say what each one measured, what failed and what is still unknown.</p>
+      <h2>Availability</h2>
+      <p>{site.status}. I'm in {site.location} and open to work anywhere.</p>
+      <h2 id="experience">Experience</h2>
+      {site.experience.length === 0
+        ? <p>Experience and research roles will be listed here once confirmed. For now, the <a href="/work/">case studies</a> are the best record of what I have done.</p>
+        : <ol>{site.experience.map((e) => <li><span class="meta">{e.period}</span> <strong>{e.role}</strong>, {e.org}</li>)}</ol>}
+      <h2>Elsewhere</h2>
+      <ul>
+        <li><a href={site.github} rel="noopener noreferrer">GitHub</a></li>
+        <li><a href={site.linkedin} rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      </ul>
+    </div>
+  </section>
+</Base>
+<style>
+  h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); margin-bottom: 24px; }
+  h2 { font-size: 1.5rem; margin: 40px 0 12px; }
+  li { margin-bottom: 6px; }
+</style>

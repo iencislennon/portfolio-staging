@@ -1,0 +1,24 @@
+---
+import { site } from "../data/site";
+---
+<footer class="site-footer" id="contact">
+  <div class="container inner">
+    <div>
+      <p class="eyebrow">Contact</p>
+      <p class="lead">{site.status}.</p>
+      <ul class="links">
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a href={site.github} rel="noopener noreferrer" target="_blank">GitHub<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a></li>
+        <li><a href={site.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+    <p class="meta">{site.name} · {site.location} · Updated {site.updated}</p>
+  </div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--line); padding-block: 64px; background: var(--surface); }
+  .inner { display: grid; gap: 32px; }
+  .lead { font: 700 1.5rem/1.3 var(--font-head); color: var(--ink); max-width: 28ch; }
+  .links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .links a { display: inline-flex; min-height: 44px; align-items: center; }
+</style>
