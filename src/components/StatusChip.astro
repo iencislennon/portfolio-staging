@@ -1,5 +1,0 @@
----
-const { status } = Astro.props as { status: "live" | "code" | "research" | "progress" };
-const label = { live: "Live", code: "Code", research: "Research", progress: "In progress" }[status];
----
-<span class="chip" data-tone={status}>{label}</span>
