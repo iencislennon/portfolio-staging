@@ -8,4 +8,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npm test
+      - run: npm run validate
+      - run: npm run check
+      - run: npm run build
+      - run: npm run links
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+        env: { PW_CHANNEL: "" }
+      - run: npm run lhci

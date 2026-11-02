@@ -13,21 +13,22 @@ Date: 2026-11-02. Scope: the Astro portfolio only. Nothing here has been deploye
 | `npm run links` (internal links and assets in dist) | 0 broken |
 | axe-core 4.x, tags wcag2a/aa, wcag21aa, wcag22aa, best-practice, 9 pages x light and dark | 0 violations (after fixing 2 real issues: low-contrast chip text, skipped heading level) |
 | Horizontal overflow at 320, 375, 390, 768, 1024, 1280, 1440, 1920 px | none (after fixing 2 real issues) |
-| Lighthouse (headless Chrome, default mobile profile, local preview): /, /work/, /work/triton/, /work/water/ | Performance, Accessibility, Best Practices, SEO all 100; LCP 0.8 s, CLS 0.001–0.037, TBT 0–20 ms. Lab data on localhost, not field data |
+| Lighthouse CI (`npm run lhci`, assertions: all categories >= 95, LCP <= 2.5 s, CLS <= 0.1), all 9 pages, local static server, default mobile profile | pass; every category scored 100; LCP 0.8-1.5 s across runs. Lab data, not field data |
+| Playwright (`npm run e2e`, Google Chrome): 54 tests | 54 pass: smoke on 9 routes (one h1, no console errors, unique titles, canonical), content without JavaScript, sourced metrics and alt text on each case study, all 10 case-study blocks, theme persistence, rel=noopener, reduced motion, axe (WCAG 2.2 AA tags) on 9 routes x 2 themes, keyboard walkthrough with visible 2px focus ring on every stop, 44 px targets in header/footer, no overflow at 8 widths, reflow at 200% and 400% zoom |
 | Bundle | 5.5 KB gzip CSS; only JS is the inline theme toggle; fonts self-hosted |
 
 ## Not done / not verified
 
-- **Lighthouse on the other 5 pages and on a deployed URL, Lighthouse CI in the pipeline, Playwright e2e, keyboard walkthrough, VoiceOver smoke test, 200% zoom check**: not run. Do these before launch.
-- **LCP / INP / CLS**: not measured on a deployed URL.
-- **OG image**: `public/og/default.svg` only. X/LinkedIn/Facebook need a 1200x630 PNG; add `public/og/default.png` and update `Base.astro`.
+- **VoiceOver smoke test**: cannot be automated here; do a manual pass (landmarks, heading list, diagram `title` text, theme button label).
+- **Real-user Core Web Vitals** (LCP/INP/CLS): only lab data exists; measure on the deployed URL.
+- **Lighthouse and Playwright on a deployed URL**: run after staging exists.
 - **Résumé PDF**: none exists. Drop `Ansar_Tleubayev_Resume.pdf` into `public/resume/` and the download button appears automatically.
 - **Experience, recognition, photo/monogram**: no verified data was available, so those sections are hidden. Fill `experience` and `recognition` in `src/data/site.ts`.
 - **ClearMind case study**: excluded until its repository passes readiness checks (CI, dependency audit, staging).
-- **Responsive screenshots at 390/768/1440** and the keyboard test: not captured.
 - **External links** (GitHub repos) were not crawled; internal links only.
 - **Cards** show result + "My part" but not the problem statement (shown on the case-study page instead).
-- **Fonts**: Manrope + Inter only; mono uses the system monospace stack instead of a third webfont, to stay within "2 families".
+- **Fonts**: Manrope + Inter only; mono uses the system monospace stack instead of a third webfont, to stay within "2 families". The OG image is rendered with fallback fonts.
+- **Social preview**: `public/og/default.png` (1200x630) is a simple generated card; replace with a designed image if wanted.
 
 ## Content that depends on unmerged repo work
 
