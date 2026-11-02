@@ -14,7 +14,9 @@ import { site } from "../data/site";
       <h2 id="experience">Experience</h2>
       {site.experience.length === 0
         ? <p>Experience and research roles will be listed here once confirmed. For now, the <a href="/work/">case studies</a> are the best record of what I have done.</p>
-        : <ol>{site.experience.map((e) => <li><span class="meta">{e.period}</span> <strong>{e.role}</strong>, {e.org}</li>)}</ol>}
+        : <ol class="tl">{site.experience.map((e) => <li><span class="meta">{e.period}</span><br /><strong>{e.role}</strong>, {e.org}{e.note && <><br />{e.note}</>}</li>)}</ol>}
+      <h2>Education</h2>
+      <p>{site.education.degree}, {site.education.school}. {site.education.expected}. {site.education.honor}.</p>
       <h2>Elsewhere</h2>
       <ul>
         <li><a href={site.github} rel="noopener noreferrer">GitHub</a></li>
@@ -28,4 +30,5 @@ import { site } from "../data/site";
   h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); margin-bottom: 24px; }
   h2 { font-size: 1.5rem; margin: 40px 0 12px; }
   li { margin-bottom: 6px; }
+  .tl { padding-left: 20px; } .tl li { margin-bottom: 16px; }
 </style>

@@ -30,8 +30,15 @@ export const site = {
     { area: "Geospatial ML", detail: "Satellite-derived features, Random Forest downscaling, independent validation" },
   ],
   // Fill these in with verified entries; sections stay hidden while empty.
-  experience: [] as { period: string; role: string; org: string; note?: string }[],
-  recognition: [] as { title: string; detail: string; url?: string }[],
+  experience: [
+    { period: "Jun 2026", role: "AI Engineer", org: "Protocol Control Bot, Almaty", note: "Deployed an AI Telegram assistant for government workflows; designed PostgreSQL-based multi-tenant data ingestion pipelines; owned CI/CD, infrastructure configuration and monitoring." },
+    { period: "Apr 2026 – Jun 2026", role: "AI Engineer", org: "Tyin.ai, Almaty", note: "Built generative components for a multi-agent pipeline, scraping and LLM orchestration, and evaluated model outputs." },
+    { period: "Sep 2025 – Oct 2026", role: "ML Engineer", org: "CAIR, Almaty", note: "Fine-tuned GLM-4-9B with LoRA on GPUs via RunPod." },
+  ] as { period: string; role: string; org: string; note?: string }[],
+  recognition: [
+    { title: "6th place, CYCNET Capture The Flag", detail: "cybersecurity competition" },
+  ] as { title: string; detail: string; url?: string }[],
+  education: { degree: "B.Sc. Information Systems", school: "SDU University, Almaty", expected: "Expected 2029", honor: "Full tuition grant" },
   resumePdf: "/resume/Ansar_Tleubayev_Resume.pdf",
 };
 export type Site = typeof site;
