@@ -13,11 +13,12 @@ Date: 2026-11-02. Scope: the Astro portfolio only. Nothing here has been deploye
 | `npm run links` (internal links and assets in dist) | 0 broken |
 | axe-core 4.x, tags wcag2a/aa, wcag21aa, wcag22aa, best-practice, 9 pages x light and dark | 0 violations (after fixing 2 real issues: low-contrast chip text, skipped heading level) |
 | Horizontal overflow at 320, 375, 390, 768, 1024, 1280, 1440, 1920 px | none (after fixing 2 real issues) |
+| Lighthouse (headless Chrome, default mobile profile, local preview): /, /work/, /work/triton/, /work/water/ | Performance, Accessibility, Best Practices, SEO all 100; LCP 0.8 s, CLS 0.001–0.037, TBT 0–20 ms. Lab data on localhost, not field data |
 | Bundle | 5.5 KB gzip CSS; only JS is the inline theme toggle; fonts self-hosted |
 
 ## Not done / not verified
 
-- **Lighthouse CI, Playwright e2e, keyboard walkthrough, VoiceOver smoke test, 200% zoom check**: not run. Do these before launch.
+- **Lighthouse on the other 5 pages and on a deployed URL, Lighthouse CI in the pipeline, Playwright e2e, keyboard walkthrough, VoiceOver smoke test, 200% zoom check**: not run. Do these before launch.
 - **LCP / INP / CLS**: not measured on a deployed URL.
 - **OG image**: `public/og/default.svg` only. X/LinkedIn/Facebook need a 1200x630 PNG; add `public/og/default.png` and update `Base.astro`.
 - **Résumé PDF**: none exists. Drop `Ansar_Tleubayev_Resume.pdf` into `public/resume/` and the download button appears automatically.
