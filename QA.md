@@ -53,3 +53,12 @@ Host `dist/` on GitHub Pages, Cloudflare Pages or Vercel. Production: `SITE_URL=
 ## Rollback
 
 The site is static. Roll back by redeploying the previous commit's `dist/` (Pages/Vercel keep prior deployments; or `git revert <sha> && npm run build`). No database or backend is involved.
+
+## Staging (deployed 2026-11-02)
+
+- URL: https://iencislennon.github.io/portfolio-staging/ (repo `iencislennon/portfolio-staging`, GitHub Pages via `.github/workflows/deploy-staging.yml`).
+- Built with `BASE_PATH=/portfolio-staging NOINDEX=1`: `<meta name="robots" content="noindex, nofollow">` on every page and `robots.txt` = `Disallow: /`. Verified live.
+- All 9 routes, sitemap, robots, OG image and favicon return 200; unknown paths return 404.
+- Lighthouse on the live URL (home, Triton case study): Performance 98, Accessibility 100, Best Practices 100, SEO 63. The SEO score is low only because staging is deliberately noindex; production builds without `NOINDEX` (verified 100 locally).
+- Rollback: revert the commit on `main` (the workflow redeploys) or delete the Pages deployment; no backend or database.
+- Production: set repo variable/secret-free env in the workflow (`SITE_URL`, no `NOINDEX`, matching `BASE_PATH`) and deploy to the final domain only after approval.
