@@ -1,4 +1,5 @@
 ---
+import { u } from "../lib/url";
 import Base from "../layouts/Base.astro";
 ---
 <Base title="Page not found" description="This page does not exist." path="/404/">
@@ -8,10 +9,10 @@ import Base from "../layouts/Base.astro";
       <h1>This page is not here</h1>
       <p>The link may be old or mistyped. These are the places that exist:</p>
       <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/work/">Selected work</a></li>
-        <li><a href="/about/">About</a></li>
-        <li><a href="/resume/">Résumé</a></li>
+        <li><a href={u("/")}>Home</a></li>
+        <li><a href={u("/work/")}>Selected work</a></li>
+        <li><a href={u("/about/")}>About</a></li>
+        <li><a href={u("/resume/")}>Résumé</a></li>
       </ul>
     </div>
   </section>

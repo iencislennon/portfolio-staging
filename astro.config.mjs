@@ -8,6 +8,7 @@ const site = process.env.SITE_URL ?? "https://iencislennon.github.io";
 
 export default defineConfig({
   site,
+  base: process.env.BASE_PATH || "/",
   integrations: [mdx(), sitemap()],
   build: { inlineStylesheets: "auto" },
   prefetch: false,

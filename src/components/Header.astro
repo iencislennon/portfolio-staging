@@ -1,17 +1,18 @@
 ---
+import { u, stripBase } from "../lib/url";
 import { site } from "../data/site";
-const path = Astro.url.pathname;
+const path = stripBase(Astro.url.pathname);
 const nav = [
-  { href: "/work/", label: "Work", active: path.startsWith("/work") },
-  ...(site.experience.length ? [{ href: "/about/#experience", label: "Experience", active: false }] : []),
-  { href: "/about/", label: "About", active: path.startsWith("/about") },
+  { href: u("/work/"), label: "Work", active: path.startsWith("/work") },
+  ...(site.experience.length ? [{ href: u("/about/#experience"), label: "Experience", active: false }] : []),
+  { href: u("/about/"), label: "About", active: path.startsWith("/about") },
   { href: "#contact", label: "Contact", active: false },
-  { href: "/resume/", label: "Résumé", active: path.startsWith("/resume") },
+  { href: u("/resume/"), label: "Résumé", active: path.startsWith("/resume") },
 ];
 ---
 <header class="site-header">
   <div class="container bar">
-    <a class="brand" href="/" aria-label={`${site.name} — home`}>{site.initials}</a>
+    <a class="brand" href={u("/")} aria-label={`${site.name} — home`}>{site.initials}</a>
     <nav aria-label="Primary">
       <ul>
         {nav.map((n) => (

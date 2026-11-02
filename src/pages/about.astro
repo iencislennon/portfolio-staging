@@ -1,4 +1,5 @@
 ---
+import { u } from "../lib/url";
 import Base from "../layouts/Base.astro";
 import { site } from "../data/site";
 ---
@@ -13,7 +14,7 @@ import { site } from "../data/site";
       <p>{site.status}. I'm in {site.location} and open to work anywhere.</p>
       <h2 id="experience">Experience</h2>
       {site.experience.length === 0
-        ? <p>Experience and research roles will be listed here once confirmed. For now, the <a href="/work/">case studies</a> are the best record of what I have done.</p>
+        ? <p>Experience and research roles will be listed here once confirmed. For now, the <a href={u("/work/")}>case studies</a> are the best record of what I have done.</p>
         : <ol class="tl">{site.experience.map((e) => <li><span class="meta">{e.period}</span><br /><strong>{e.role}</strong>, {e.org}{e.note && <><br />{e.note}</>}</li>)}</ol>}
       <h2>Education</h2>
       <p>{site.education.degree}, {site.education.school}. {site.education.expected}. {site.education.honor}.</p>

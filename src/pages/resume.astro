@@ -1,4 +1,5 @@
 ---
+import { u } from "../lib/url";
 import { existsSync } from "node:fs";
 import Base from "../layouts/Base.astro";
 import { site } from "../data/site";
@@ -11,7 +12,7 @@ const hasPdf = existsSync(new URL(`../../public${site.resumePdf}`, import.meta.u
       <p class="eyebrow">Résumé</p>
       <h1>Résumé</h1>
       {hasPdf
-        ? <p><a class="btn btn-primary" href={site.resumePdf} download>Download résumé (PDF)</a></p>
+        ? <p><a class="btn btn-primary" href={u(site.resumePdf)} download>Download résumé (PDF)</a></p>
         : <p>The PDF résumé is not published on this site yet. Please email me for the current version, or see my LinkedIn profile.</p>}
       <p><a class="btn btn-secondary" href={`mailto:${site.email}?subject=R%C3%A9sum%C3%A9%20request`}>Email me</a> <a class="btn btn-secondary" href={site.linkedin} rel="noopener noreferrer">LinkedIn<span class="sr-only"> (opens in a new tab)</span> ↗</a></p>
     </div>

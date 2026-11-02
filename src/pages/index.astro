@@ -1,4 +1,5 @@
 ---
+import { u } from "../lib/url";
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import ProjectCard from "../components/ProjectCard.astro";
@@ -27,8 +28,8 @@ const jsonLd = {
       <h1>{site.hero.h1}</h1>
       <p class="body">{site.hero.body}</p>
       <div class="cta">
-        <a class="btn btn-primary" href="/work/">View selected work</a>
-        <a class="btn btn-secondary" href="/resume/">Résumé</a>
+        <a class="btn btn-primary" href={u("/work/")}>View selected work</a>
+        <a class="btn btn-secondary" href={u("/resume/")}>Résumé</a>
         <a class="textlink" href="#contact">Contact me</a>
       </div>
       <p class="status"><span class="chip" data-tone="live">Open</span> {site.status}</p>
@@ -48,7 +49,7 @@ const jsonLd = {
       <div class="grid">
         {projects.map((p, i) => <div class={`cell c${i}`}><ProjectCard project={p} /></div>)}
       </div>
-      <p class="more"><a href="/work/">All work</a></p>
+      <p class="more"><a href={u("/work/")}>All work</a></p>
     </div>
   </section>
 
@@ -87,7 +88,7 @@ const jsonLd = {
       <p class="eyebrow">About</p>
       <h2 id="about-h">Evidence before claims</h2>
       <p>I am an AI/ML engineer based in Almaty. I like projects where a result can be checked: a benchmark with a stated baseline, a forecast evaluated on later data, an agent system whose coordination rules have tests. This site says what each project measured, what failed and what is still unknown.</p>
-      <p><a href="/about/">More about me</a></p>
+      <p><a href={u("/about/")}>More about me</a></p>
     </div>
   </section>
 

@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { join } from "node:path";
 const root = new URL("../dist/", import.meta.url).pathname;
 const walk = (d) => readdirSync(d).flatMap((n) => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p) : [p]; });
+const base = (process.env.BASE_PATH || "").replace(/\/$/, "");
 const html = walk(root).filter((f) => f.endsWith(".html"));
 let broken = 0;
 for (const f of html) {
@@ -10,7 +11,8 @@ for (const f of html) {
   for (const m of src.matchAll(/(?:href|src)="([^"]+)"/g)) {
     const u = m[1];
     if (/^(https?:|mailto:|tel:|data:|#)/.test(u)) continue;
-    const path = u.split("#")[0].split("?")[0];
+    let path = u.split("#")[0].split("?")[0];
+    if (base && path.startsWith(base)) path = path.slice(base.length) || "/";
     if (!path) continue;
     const target = join(root, path.startsWith("/") ? path : join(f.replace(root, "").replace(/[^/]*$/, ""), path));
     const ok = existsSync(target) && (!statSync(target).isDirectory() || existsSync(join(target, "index.html")));
