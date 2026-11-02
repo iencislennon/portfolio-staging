@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
-import ProjectCard from "../../components/ProjectCard.astro";
+import WorkRow from "../../components/WorkRow.astro";
 const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
 ---
 <Base title="Selected work" description="Four AI/ML projects with their results, limitations and evidence: model optimization, agentic systems, forecasting and geospatial ML." path="/work/">
@@ -10,13 +10,12 @@ const projects = (await getCollection("projects")).sort((a, b) => a.data.order -
       <p class="eyebrow">Selected work</p>
       <h1>Projects and the evidence behind them</h1>
       <p class="lead">Each case study states my contribution, what was measured against what, what failed and what is still unknown.</p>
-      <div class="grid">{projects.map((p) => <ProjectCard project={p} level="h2" />)}</div>
+      <ul class="rows">{projects.map((p) => <WorkRow project={p} level="h2" />)}</ul>
     </div>
   </section>
 </Base>
 <style>
   h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); margin-bottom: 16px; max-width: 18ch; }
-  .lead { color: var(--ink-soft); font-size: 1.1875rem; margin-bottom: 48px; }
-  .grid { display: grid; gap: 24px; }
-  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  .lead { color: var(--ink-soft); font-size: 1.1875rem; margin-bottom: 32px; }
+  .rows { list-style: none; padding: 0; margin: 0; max-width: 860px; }
 </style>

@@ -33,12 +33,14 @@ for (const path of routes) {
   });
 }
 
-test("interactive targets are at least 44px tall in the header and footer", async ({ page }) => {
-  await page.goto("/");
-  for (const sel of ["header a", "header button", "footer a"]) {
-    for (const el of await page.locator(sel).all()) {
-      const box = await el.boundingBox();
-      expect(box!.height, sel).toBeGreaterThanOrEqual(43.5);
+test("interactive targets are at least 44px tall in navigation, header and footer", async ({ page }) => {
+  for (const [path, sels] of [["/", [".side nav a", ".side .social a", ".side .social button"]], ["/work/", ["header a", "header button", "footer a"]]] as const) {
+    await page.goto(path);
+    for (const sel of sels) {
+      for (const el of await page.locator(sel).all()) {
+        const box = await el.boundingBox();
+        expect(box!.height, `${path} ${sel}`).toBeGreaterThanOrEqual(43.5);
+      }
     }
   }
 });

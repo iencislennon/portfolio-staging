@@ -36,8 +36,8 @@ Case studies describe the repositories after the `polish/showcase` branches are 
 
 ## Claims to confirm before publishing
 
-- Triton: official team name, roster, and which kernels were personally written (history shows 24 of 53 commits, tooling/measurement/submission).
-- CrisisNet: team credits on the lablab.ai page.
+- Triton: shown as a team project with 3 GitHub contributors; my contribution is stated from commit history (24 of 53 commits: tooling, measurement, submission), no individual kernels claimed.
+- CrisisNet: stated as solo (owner's statement; matches history, all 16 commits).
 - Triton Kaggle notebook visibility is unverified, so it is not linked.
 
 ## Deploy (staging first)

@@ -1,9 +1,9 @@
 ---
-import { u } from "../lib/url";
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
-import ProjectCard from "../components/ProjectCard.astro";
+import WorkRow from "../components/WorkRow.astro";
 import { site } from "../data/site";
+import { u } from "../lib/url";
 
 const projects = (await getCollection("projects", (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order);
 const jsonLd = {
@@ -11,129 +11,151 @@ const jsonLd = {
   "@type": "ProfilePage",
   dateModified: site.updated,
   mainEntity: {
-    "@type": "Person",
-    name: site.name,
-    jobTitle: site.title,
-    description: site.description,
+    "@type": "Person", name: site.name, jobTitle: site.title, description: site.description,
     address: { "@type": "PostalAddress", addressLocality: "Almaty", addressCountry: "KZ" },
-    sameAs: [site.github, site.linkedin],
-    email: `mailto:${site.email}`,
+    sameAs: [site.github, site.linkedin], email: `mailto:${site.email}`,
   },
 };
+const sections = [
+  { id: "about", label: "About" },
+  { id: "work", label: "Work" },
+  ...(site.experience.length ? [{ id: "experience", label: "Experience" }] : []),
+  { id: "contact", label: "Contact" },
+];
 ---
-<Base title={site.title} description={site.description} path="/" jsonLd={jsonLd}>
-  <section class="hero">
-    <div class="container">
-      <p class="eyebrow">{site.hero.eyebrow}</p>
-      <h1>{site.hero.h1}</h1>
-      <p class="body">{site.hero.body}</p>
-      <div class="cta">
-        <a class="btn btn-primary" href={u("/work/")}>View selected work</a>
-        <a class="btn btn-secondary" href={u("/resume/")}>Résumé</a>
-        <a class="textlink" href="#contact">Contact me</a>
+<Base title={site.title} description={site.description} path="/" jsonLd={jsonLd} shell="bare">
+  <div class="shell container">
+    <aside class="side">
+      <div class="side-top">
+        <p class="name">{site.name}</p>
+        <p class="role">{site.title}</p>
+        <h1 class="tagline">{site.hero.h1}</h1>
+        <p class="status"><span class="chip" data-tone="live">Open</span> {site.status}</p>
+        <nav class="spy" aria-label="Sections">
+          <ul>{sections.map((s) => <li><a href={`#${s.id}`} data-spy={s.id}><span class="bar" aria-hidden="true"></span>{s.label}</a></li>)}</ul>
+        </nav>
       </div>
-      <p class="status"><span class="chip" data-tone="live">Open</span> {site.status}</p>
+      <ul class="social" aria-label="Links">
+        <li><a href={site.github} rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a></li>
+        <li><a href={site.linkedin} rel="noopener noreferrer">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></li>
+        <li><a href={`mailto:${site.email}`}>Email</a></li>
+        <li><a href={u("/resume/")}>Résumé</a></li>
+        <li><button id="theme-toggle" class="theme" type="button" aria-label="Theme: system. Activate to change."><span aria-hidden="true">◐</span> Theme</button></li>
+      </ul>
+    </aside>
+
+    <div class="feed">
+      <section id="about" aria-labelledby="about-h" data-section>
+        <h2 id="about-h" class="sec">About</h2>
+        <p>{site.hero.body}</p>
+        <p>I like projects where a result can be checked: a benchmark with a stated baseline, a forecast evaluated on later data, an agent system whose coordination rules have tests. The case studies below say what each one measured, what failed and what is still unknown.</p>
+        <dl class="range">
+          {site.range.map((r) => (<div><dt>{r.area}</dt><dd>{r.detail}</dd></div>))}
+        </dl>
+      </section>
+
+      <section id="work" aria-labelledby="work-h" data-section>
+        <h2 id="work-h" class="sec">Selected work</h2>
+        <ul class="rows">{projects.map((p) => <WorkRow project={p} />)}</ul>
+        <p class="all"><a href={u("/work/")}>View all work →</a></p>
+      </section>
+
+      {site.experience.length > 0 && (
+        <section id="experience" aria-labelledby="exp-h" data-section>
+          <h2 id="exp-h" class="sec">Experience</h2>
+          <ol class="xp">
+            {site.experience.map((e) => (
+              <li><p class="when meta">{e.period}</p><div><p class="what"><strong>{e.role}</strong> · {e.org}</p>{e.note && <p class="note">{e.note}</p>}</div></li>
+            ))}
+          </ol>
+          {site.recognition.length > 0 && (
+            <>
+              <h3 class="sub-h">Recognition</h3>
+              <ul class="plain">{site.recognition.map((r) => <li><strong>{r.title}</strong>, {r.detail}</li>)}</ul>
+            </>
+          )}
+        </section>
+      )}
+
+      <section id="contact" aria-labelledby="contact-h" data-section>
+        <h2 id="contact-h" class="sec">Contact</h2>
+        <p>{site.status}. Email is the fastest way to reach me.</p>
+        <p><a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a></p>
+        <p class="meta">{site.name} · {site.location} · Updated {site.updated}</p>
+      </section>
     </div>
-  </section>
-
-  <section class="proof" aria-label="Proof">
-    <div class="container">
-      <ul>{site.proof.map((p) => <li>{p}</li>)}</ul>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="work-h">
-    <div class="container">
-      <p class="eyebrow">Featured work</p>
-      <h2 id="work-h">Four projects, each with its evidence</h2>
-      <div class="grid">
-        {projects.map((p, i) => <div class={`cell c${i}`}><ProjectCard project={p} /></div>)}
-      </div>
-      <p class="more"><a href={u("/work/")}>All work</a></p>
-    </div>
-  </section>
-
-  <section class="section alt" aria-labelledby="range-h">
-    <div class="container">
-      <p class="eyebrow">Engineering range</p>
-      <h2 id="range-h">What I work on</h2>
-      <dl class="range">
-        {site.range.map((r) => (<div><dt>{r.area}</dt><dd>{r.detail}</dd></div>))}
-      </dl>
-    </div>
-  </section>
-
-  {site.experience.length > 0 && (
-    <section class="section" id="experience" aria-labelledby="exp-h">
-      <div class="container">
-        <p class="eyebrow">Experience</p>
-        <h2 id="exp-h">Experience and research</h2>
-        <ol class="timeline">{site.experience.map((e) => <li><span class="meta">{e.period}</span><strong>{e.role}</strong>, {e.org}{e.note && <p>{e.note}</p>}</li>)}</ol>
-      </div>
-    </section>
-  )}
-
-  {site.recognition.length > 0 && (
-    <section class="section alt" aria-labelledby="rec-h">
-      <div class="container">
-        <p class="eyebrow">Selected recognition</p>
-        <h2 id="rec-h">Recognition</h2>
-        <ul class="plain">{site.recognition.map((r) => <li><strong>{r.title}</strong> {r.detail}</li>)}</ul>
-      </div>
-    </section>
-  )}
-
-  <section class="section" aria-labelledby="about-h">
-    <div class="container read">
-      <p class="eyebrow">About</p>
-      <h2 id="about-h">Evidence before claims</h2>
-      <p>I am an AI/ML engineer based in Almaty. I like projects where a result can be checked: a benchmark with a stated baseline, a forecast evaluated on later data, an agent system whose coordination rules have tests. This site says what each project measured, what failed and what is still unknown.</p>
-      <p><a href={u("/about/")}>More about me</a></p>
-    </div>
-  </section>
-
-  <section class="section cta-band" aria-labelledby="contact-h">
-    <div class="container read">
-      <h2 id="contact-h">Let's talk about internships and research</h2>
-      <p>{site.status}. Email is the fastest way to reach me.</p>
-      <p><a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a></p>
-    </div>
-  </section>
+  </div>
 </Base>
 
+<script>
+  const root = document.documentElement;
+  const btn = document.getElementById("theme-toggle");
+  const order = ["system", "light", "dark"] as const;
+  const read = () => { try { return localStorage.getItem("theme") || "system"; } catch { return "system"; } };
+  const apply = (v: string) => {
+    if (v === "system") delete root.dataset.theme; else root.dataset.theme = v;
+    btn?.setAttribute("aria-label", `Theme: ${v}. Activate to change.`);
+    try { v === "system" ? localStorage.removeItem("theme") : localStorage.setItem("theme", v); } catch {}
+  };
+  apply(read());
+  btn?.addEventListener("click", () => apply(order[(order.indexOf(read() as (typeof order)[number]) + 1) % order.length]));
+
+  // Scroll-spy: highlight the section nearest the top. Enhancement only; links work without it.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-spy]")];
+  const secs = [...document.querySelectorAll<HTMLElement>("[data-section]")];
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) {
+      links.forEach((l) => l.toggleAttribute("aria-current", l.dataset.spy === e.target.id));
+    }
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  secs.forEach((s) => io.observe(s));
+</script>
+
 <style>
-  .hero { padding-block: 72px 56px; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; }
-  :global(:root[data-theme="dark"]) .hero { background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); }
-  .hero .container { background: linear-gradient(var(--paper), var(--paper)); padding-block: 8px; }
-  h1 { font-size: clamp(40px, 11vw, 56px); line-height: 1; letter-spacing: -0.02em; max-width: 16ch; margin-bottom: 24px; }
-  .body { font-size: 1.1875rem; color: var(--ink-soft); max-width: 60ch; }
-  .cta { display: flex; flex-direction: column; gap: 12px; margin-block: 32px 24px; align-items: stretch; }
-  .textlink { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; font-weight: 600; }
-  .status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink-soft); font-size: 0.9375rem; margin: 0; }
-  .proof { border-block: 1px solid var(--line); background: var(--surface); }
-  .proof ul { list-style: none; margin: 0; padding: 24px 0; display: grid; gap: 12px; }
-  .proof li { font-weight: 500; color: var(--ink); }
-  h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 40px; max-width: 24ch; }
-  .grid { display: grid; gap: 24px; }
-  .more { margin-top: 32px; }
-  .alt { background: var(--surface); border-block: 1px solid var(--line); }
-  .range { display: grid; gap: 24px; margin: 0; }
-  .range dt { font: 700 1.125rem/1.3 var(--font-head); margin-bottom: 4px; }
-  .range dd { margin: 0; color: var(--ink-soft); }
-  .timeline { padding-left: 20px; display: grid; gap: 20px; }
-  .timeline .meta { display: block; margin-bottom: 2px; }
-  .plain { padding-left: 20px; }
-  .cta-band h2 { margin-bottom: 16px; }
-  @media (min-width: 640px) {
-    .cta { flex-direction: row; align-items: center; flex-wrap: wrap; }
-    .hero { padding-block: 112px 80px; }
-    .range { grid-template-columns: repeat(2, 1fr); }
+  .shell { display: block; padding-block: 48px 64px; }
+  .side { display: flex; flex-direction: column; gap: 32px; margin-bottom: 56px; }
+  .name { font: 800 clamp(2.25rem, 8vw, 3rem)/1.05 var(--font-head); letter-spacing: -0.02em; margin: 0 0 6px; color: var(--ink); }
+  .role { font: 600 1.125rem/1.3 var(--font-head); color: var(--ink); margin: 0 0 12px; }
+  .tagline { font: 500 1rem/1.55 var(--font-body); color: var(--ink-soft); max-width: 30ch; margin: 0 0 20px; letter-spacing: 0; }
+  .status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--ink-soft); margin: 0 0 24px; max-width: none; }
+  .spy { display: none; }
+  .spy ul { list-style: none; margin: 0; padding: 0; }
+  .spy a { display: flex; align-items: center; gap: 14px; min-height: 44px; color: var(--muted); text-decoration: none; font: 600 0.8125rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .spy .bar { width: 28px; height: 1px; background: currentColor; transition: width 180ms var(--ease), background-color 180ms var(--ease); }
+  .spy a:hover, .spy a[aria-current] { color: var(--ink); }
+  .spy a:hover .bar, .spy a[aria-current] .bar { width: 56px; }
+  .social { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 20px; }
+  .social a, .theme { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font: 500 0.9375rem/1 var(--font-body); color: var(--ink-soft); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
+  .social a:hover, .theme:hover { color: var(--primary); }
+
+  .feed section { padding-bottom: 72px; scroll-margin-top: 24px; }
+  .sec { font: 700 0.8125rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); margin: 0 0 24px; }
+  .feed p { color: var(--ink-soft); }
+  .range { display: grid; gap: 14px; margin: 28px 0 0; }
+  .range dt { font: 700 1rem/1.3 var(--font-head); color: var(--ink); }
+  .range dd { margin: 2px 0 0; color: var(--ink-soft); font-size: 0.9375rem; }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .all a { font-weight: 600; display: inline-flex; min-height: 44px; align-items: center; }
+  .xp { list-style: none; padding: 0; margin: 0; display: grid; gap: 28px; }
+  .xp li { display: grid; gap: 4px; }
+  .when { margin: 0; }
+  .what { margin: 0 0 4px; color: var(--ink); }
+  .note { margin: 0; font-size: 0.9375rem; }
+  .sub-h { font: 700 1rem/1.3 var(--font-head); margin: 40px 0 8px; }
+  .plain { padding-left: 20px; margin: 0; color: var(--ink-soft); }
+
+  @media (min-width: 640px) { .xp li { grid-template-columns: 150px minmax(0, 1fr); gap: 20px; } .when { padding-top: 4px; } }
+
+  @media (min-width: 1024px) {
+    .shell { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 64px; padding-block: 0; }
+    .side { position: sticky; top: 0; height: 100vh; max-height: 100dvh; justify-content: space-between; padding-block: 96px 48px; margin: 0; }
+    .spy { display: block; }
+    .feed { padding-block: 96px 0; }
+    .feed section { padding-bottom: 96px; }
   }
-  @media (min-width: 900px) {
-    h1 { font-size: clamp(56px, 6vw, 72px); line-height: 0.98; }
-    .proof ul { grid-template-columns: repeat(3, 1fr); gap: 32px; }
-    .grid { grid-template-columns: repeat(12, 1fr); gap: 24px; }
-    .c0 { grid-column: span 7; } .c1 { grid-column: span 5; } .c2 { grid-column: span 5; } .c3 { grid-column: span 7; }
-    .range { grid-template-columns: repeat(4, 1fr); }
+  /* Hover: dim siblings so the focused row reads clearly. */
+  @media (hover: hover) {
+    .rows:has(.row:hover) .row:not(:hover) { opacity: 0.55; }
+    .row { transition: opacity 180ms var(--ease); }
   }
 </style>

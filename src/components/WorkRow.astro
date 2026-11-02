@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Cover from "./Cover.astro";
+import StatusChip from "./StatusChip.astro";
+import { u } from "../lib/url";
+const { project, level = "h3" } = Astro.props as { project: CollectionEntry<"projects">; level?: "h2" | "h3" };
+const d = project.data;
+const Tag = level;
+---
+<li class="row">
+  <div class="thumb"><Cover id={d.coverImage!.id} alt={d.coverImage!.alt} /></div>
+  <div class="txt">
+    <Tag class="title"><a class="stretch" href={u(`/work/${project.id}/`)}>{d.title}<span class="arrow" aria-hidden="true"> →</span></a></Tag>
+    <p class="meta sub"><StatusChip status={d.status} /> <span>{d.category} · {d.year}</span></p>
+    <p class="blurb">{d.blurb}</p>
+    <ul class="tags" aria-label="Stack">{d.stack.map((s) => <li class="tag">{s}</li>)}</ul>
+    <p class="links">
+      {d.links.map((l) => <a href={l.href} rel="noopener noreferrer">{l.label}<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>)}
+    </p>
+  </div>
+</li>
+<style>
+  .row { position: relative; display: grid; gap: 14px; padding: 20px 0; border-radius: 12px; }
+  .thumb { width: 100%; }
+  .title { font: 700 1.125rem/1.3 var(--font-head); margin: 0 0 4px; letter-spacing: -0.005em; }
+  .title a { color: var(--ink); text-decoration: none; }
+  .stretch::after { content: ""; position: absolute; inset: -8px -12px; border-radius: 12px; }
+  .arrow { display: inline-block; margin-left: 4px; transition: transform 180ms var(--ease); }
+  .sub { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .blurb { margin: 0 0 12px; color: var(--ink-soft); font-size: 0.9375rem; line-height: 1.6; }
+  .tags { list-style: none; padding: 0; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .links { margin: 0; display: flex; flex-wrap: wrap; gap: 0 18px; position: relative; z-index: 1; font-size: 0.9375rem; font-weight: 600; }
+  .links a { display: inline-flex; min-height: 44px; align-items: center; }
+  .row:hover .arrow { transform: translateX(4px); }
+  @media (min-width: 640px) { .row { grid-template-columns: 200px minmax(0, 1fr); gap: 24px; } }
+  @media (min-width: 640px) { .thumb { margin-top: 4px; } }
+</style>

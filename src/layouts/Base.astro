@@ -5,8 +5,8 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 
-interface Props { title: string; description?: string; path?: string; type?: "website" | "article"; jsonLd?: object; ogImage?: string }
-const { title, description = site.description, path = stripBase(Astro.url.pathname), type = "website", jsonLd, ogImage = "/og/default.png" } = Astro.props;
+interface Props { shell?: "default" | "bare"; title: string; description?: string; path?: string; type?: "website" | "article"; jsonLd?: object; ogImage?: string }
+const { shell = "default", title, description = site.description, path = stripBase(Astro.url.pathname), type = "website", jsonLd, ogImage = "/og/default.png" } = Astro.props;
 const origin = Astro.site ?? new URL("https://iencislennon.github.io");
 const canonical = new URL(u(path), origin).href;
 const fullTitle = path === "/" ? `${site.name} — ${site.title}` : `${title} · ${site.name}`;
@@ -45,8 +45,8 @@ const noindex = import.meta.env.NOINDEX === "1" || process.env.NOINDEX === "1";
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Header />
+    {shell === "default" && <Header />}
     <main id="main" tabindex="-1"><slot /></main>
-    <Footer />
+    {shell === "default" && <Footer />}
   </body>
 </html>

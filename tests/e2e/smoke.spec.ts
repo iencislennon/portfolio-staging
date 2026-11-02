@@ -28,7 +28,7 @@ test("home renders core content without JavaScript", async ({ browser }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("experiment to evidence");
   await expect(page.getByRole("link", { name: "Triton Kernel Optimization" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "View selected work" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "View all work" })).toBeVisible();
   await ctx.close();
 });
 

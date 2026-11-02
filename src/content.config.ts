@@ -28,6 +28,7 @@ const projects = defineCollection({
       team: z.string().min(3),
       category: z.string(),
       summary: z.string().min(20),
+      blurb: z.string().min(20).max(160),
       problem: z.string().min(20),
       contribution: z.array(z.string()).default([]),
       stack: z.array(z.string()).min(3).max(5),
